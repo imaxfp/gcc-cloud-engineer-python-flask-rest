@@ -1,6 +1,7 @@
 import logging
 import os
-from flask import Flask, request
+from flask import Flask, render_template, request
+import socket
 
 logging.basicConfig(level=logging.DEBUG,
                     format='[%(asctime)s]: {} %(levelname)s %(message)s'.format(os.getpid()),
@@ -21,18 +22,21 @@ app = create_app()
 
 
 @app.route("/")
-def hello():
-    return '''
-    <html>
-    <body>
-      <form action = "/pdf_file" method = "POST" 
-         enctype = "multipart/form-data">
-         <input type = "file" name = "file" />
-         <input type = "submit"/>
-      </form>   
-   </body>
-   </html>
-'''
+def index():
+    try:
+        host_name = socket.gethostname()
+        host_ip = socket.gethostbyname(host_name)
+        return render_template('index.html', hostname=host_name, ip=host_ip)
+    except:
+        return render_template('error.html')
+
+
+@app.route("/upload")
+def upload():
+    try:
+        return render_template('file_uploader.html')
+    except:
+        return render_template('error.html')
 
 
 def upload_file_tmp(f):
@@ -40,7 +44,7 @@ def upload_file_tmp(f):
     upload = request.files.get('upload')
 
     # Get the data
-    raw = upload.value;
+    raw = upload.value
 
     # Write to file
     filename = upload.filename
@@ -62,5 +66,5 @@ def process_pdf_file():
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5005))
+    port = int(os.environ.get("PORT", 8080))
     app.run(debug=True, host='0.0.0.0', port=port)

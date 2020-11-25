@@ -1,4 +1,4 @@
-FROM python:3.7
+FROM python:3.8
 MAINTAINER "imaxfp"
 RUN mkdir gcc-demo
 COPY . /gcc-demo
@@ -8,5 +8,5 @@ RUN ls -la
 WORKDIR /gcc-demo/src
 RUN ls -la
 ENTRYPOINT ["python"]
-EXPOSE 5005
+EXPOSE 8080
 CMD ["app.py"]
